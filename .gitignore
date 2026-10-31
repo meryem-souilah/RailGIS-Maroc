@@ -1,0 +1,29 @@
+# Data (raw sources are re-downloadable, never versioned)
+data/raw/
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Env / secrets
+.env
+*.env.local
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+*.log
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.claude/

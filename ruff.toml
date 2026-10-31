@@ -1,0 +1,5 @@
+line-length = 100
+
+[lint]
+# B008: FastAPI's `Depends(...)` default-argument pattern is intentional, not a bug.
+ignore = ["B008"]

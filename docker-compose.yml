@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-railgis}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-railgis}
+      POSTGRES_DB: ${POSTGRES_DB:-railgis_maroc}
+    ports:
+      # 5432 est laisse au PostgreSQL local eventuel ; le conteneur reste
+      # joignable en interne (depuis `api`) via db:5432.
+      - "${POSTGRES_HOST_PORT:-5433}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-railgis}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-railgis}:${POSTGRES_PASSWORD:-railgis}@db:5432/${POSTGRES_DB:-railgis_maroc}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: nginx:alpine
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+    ports:
+      - "${WEB_PORT:-8090}:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:

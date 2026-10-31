@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RailGIS Maroc</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>RailGIS Maroc</h1>
+    <p>Carte interactive du reseau ferroviaire marocain (ONCF)</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <section>
+        <h2>Filtrer les lignes</h2>
+        <label><input type="checkbox" class="filtre-type" value="LGV" checked /> LGV (Al Boraq)</label>
+        <label><input type="checkbox" class="filtre-type" value="classique" checked /> Ligne classique</label>
+        <label><input type="checkbox" class="filtre-type" value="navette" checked /> Navette</label>
+      </section>
+
+      <section>
+        <h2>Filtrer par region</h2>
+        <select id="filtre-region">
+          <option value="">Toutes les regions</option>
+        </select>
+      </section>
+
+      <section>
+        <h2>Couches d'analyse</h2>
+        <label><input type="checkbox" id="couche-choroplethe" /> Couverture regionale (gares/region)</label>
+        <label><input type="checkbox" id="couche-heatmap" /> Densite de desserte (heatmap)</label>
+        <label><input type="checkbox" id="couche-osm" /> Trace precis (OSM)</label>
+      </section>
+
+      <section>
+        <h2>Legende</h2>
+        <ul class="legende">
+          <li><span class="swatch" style="background:#c0392b"></span> LGV</li>
+          <li><span class="swatch" style="background:#2980b9"></span> Classique</li>
+          <li><span class="swatch" style="background:#e67e22"></span> Navette</li>
+          <li><span class="swatch rond" style="background:#2c3e50"></span> Gare</li>
+        </ul>
+        <div id="legende-choroplethe" class="legende-choroplethe" hidden>
+          <p>Nombre de gares par region</p>
+          <div class="rampe-couleurs"></div>
+          <div class="rampe-labels"><span>0</span><span>max</span></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Exporter</h2>
+        <button id="export-lignes">Exporter lignes (GeoJSON)</button>
+        <button id="export-gares">Exporter gares (GeoJSON)</button>
+      </section>
+
+      <section id="info-gare" class="info-gare" hidden>
+        <h2>Horaires</h2>
+        <div id="info-gare-contenu"></div>
+      </section>
+    </aside>
+
+    <main id="map"></main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>
