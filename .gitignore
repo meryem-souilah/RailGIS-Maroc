@@ -1,6 +1,7 @@
 # Data (raw sources are re-downloadable, never versioned)
 data/raw/
 *.zip
+/models/trained/
 
 # Python
 __pycache__/

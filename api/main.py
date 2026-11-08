@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import analyse, gares, lignes, regions
+from routers import analyse, gares, lignes, predictions, regions
 
 app = FastAPI(
     title="RailGIS Maroc API",
@@ -19,6 +19,7 @@ app.include_router(lignes.router)
 app.include_router(gares.router)
 app.include_router(analyse.router)
 app.include_router(regions.router)
+app.include_router(predictions.router)
 
 
 @app.get("/")

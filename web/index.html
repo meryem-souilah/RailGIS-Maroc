@@ -36,6 +36,43 @@
         <label><input type="checkbox" id="couche-osm" /> Trace precis (OSM)</label>
       </section>
 
+      <section id="prediction-panel" class="prediction-panel">
+        <h2>Prévision expérimentale</h2>
+        <p id="prediction-status" class="prediction-status" role="status">
+          Vérification des modèles…
+        </p>
+        <form id="prediction-form">
+          <label for="prediction-station">Gare</label>
+          <select id="prediction-station" required></select>
+
+          <label for="prediction-line">Ligne</label>
+          <select id="prediction-line" required></select>
+
+          <label for="prediction-time">Date et heure planifiées</label>
+          <input id="prediction-time" type="datetime-local" required />
+
+          <label for="prediction-temperature">Température (°C)</label>
+          <input id="prediction-temperature" type="number" step="0.1" value="20" required />
+
+          <label for="prediction-rain">Précipitations (mm)</label>
+          <input id="prediction-rain" type="number" min="0" step="0.1" value="0" required />
+
+          <label for="prediction-wind">Vent (km/h)</label>
+          <input id="prediction-wind" type="number" min="0" step="0.1" value="10" required />
+
+          <label class="checkbox-label" for="prediction-holiday">
+            <input id="prediction-holiday" type="checkbox" />
+            Jour férié
+          </label>
+
+          <button id="prediction-submit" type="submit" disabled>Estimer</button>
+        </form>
+        <p class="prediction-disclaimer">
+          Résultat expérimental, à ne pas utiliser pour décider d'une exploitation réelle.
+        </p>
+        <div id="prediction-result" aria-live="polite"></div>
+      </section>
+
       <section>
         <h2>Legende</h2>
         <ul class="legende">

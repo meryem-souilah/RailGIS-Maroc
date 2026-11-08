@@ -31,6 +31,7 @@ let garesLayer = null;
 let regionsLayer = null;
 let heatLayer = null;
 let osmLayer = null;
+let predictionsLayer = null;
 
 async function fetchJson(apiPath, fallbackPath) {
   try {
@@ -207,6 +208,136 @@ function telechargerGeojson(data, nomFichier) {
   URL.revokeObjectURL(url);
 }
 
+function populatePredictionSelectors() {
+  const stationSelect = document.getElementById("prediction-station");
+  const lineSelect = document.getElementById("prediction-line");
+
+  garesGeojson.features.forEach((feature) => {
+    const option = document.createElement("option");
+    option.value = feature.properties.id;
+    option.textContent = feature.properties.nom;
+    stationSelect.appendChild(option);
+  });
+
+  lignesGeojson.features.forEach((feature) => {
+    const option = document.createElement("option");
+    option.value = feature.properties.id;
+    option.textContent = feature.properties.nom;
+    lineSelect.appendChild(option);
+  });
+}
+
+function showPredictionResult(prediction, stationFeature) {
+  const container = document.getElementById("prediction-result");
+  const result = document.createElement("div");
+  result.className = "prediction-result";
+
+  const title = document.createElement("strong");
+  title.textContent = `Prévision — ${stationFeature.properties.nom}`;
+  result.appendChild(title);
+
+  const estimate = document.createElement("p");
+  estimate.textContent =
+    `Retard estimé : ${prediction.retard_minutes.toFixed(1)} min · ` +
+    `Passagers estimés : ${prediction.passagers}`;
+  result.appendChild(estimate);
+
+  const adviceList = document.createElement("ul");
+  prediction.recommandations.forEach((advice) => {
+    const item = document.createElement("li");
+    item.textContent = advice;
+    adviceList.appendChild(item);
+  });
+  result.appendChild(adviceList);
+  container.replaceChildren(result);
+
+  if (!predictionsLayer) predictionsLayer = L.layerGroup().addTo(map);
+  predictionsLayer.clearLayers();
+  const [longitude, latitude] = stationFeature.geometry.coordinates;
+  const marker = L.circleMarker([latitude, longitude], {
+    radius: 9,
+    color: "#fff",
+    weight: 2,
+    fillColor: "#8e44ad",
+    fillOpacity: 1,
+  }).addTo(predictionsLayer);
+  marker.bindPopup(result.cloneNode(true)).openPopup();
+}
+
+async function initializePredictions() {
+  const statusElement = document.getElementById("prediction-status");
+  const submitButton = document.getElementById("prediction-submit");
+  const form = document.getElementById("prediction-form");
+  populatePredictionSelectors();
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/predictions/status`);
+    const status = await response.json();
+    if (!response.ok) throw new Error(status.detail || `HTTP ${response.status}`);
+    if (!status.available) {
+      statusElement.textContent =
+        "Modèles absents. Entraînez-les avec data_science/train.py puis rechargez l'API.";
+      return;
+    }
+
+    statusElement.textContent =
+      status.data_source === "synthetic_demo"
+        ? "Modèles disponibles — entraînés sur des données synthétiques fictives."
+        : "Modèles disponibles — origine des données fournie par l'utilisateur, non vérifiée.";
+    submitButton.disabled = false;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submitButton.disabled = true;
+      statusElement.classList.remove("prediction-error");
+      statusElement.textContent = "Calcul de la prévision…";
+      document.getElementById("prediction-result").replaceChildren();
+
+      const stationId = document.getElementById("prediction-station").value;
+      const stationFeature = garesGeojson.features.find(
+        (feature) => feature.properties.id === stationId
+      );
+      const observation = {
+        scheduled_datetime: document.getElementById("prediction-time").value,
+        line_id: document.getElementById("prediction-line").value,
+        station_id: stationId,
+        temperature_c: Number(document.getElementById("prediction-temperature").value),
+        precipitation_mm: Number(document.getElementById("prediction-rain").value),
+        wind_speed_kmh: Number(document.getElementById("prediction-wind").value),
+        is_holiday: document.getElementById("prediction-holiday").checked,
+      };
+
+      try {
+        const predictionResponse = await fetch(`${API_BASE_URL}/predictions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ observations: [observation] }),
+        });
+        const body = await predictionResponse.json();
+        if (!predictionResponse.ok) {
+          const detail = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
+          throw new Error(detail || `HTTP ${predictionResponse.status}`);
+        }
+
+        const prediction = body.predictions[0];
+        showPredictionResult(prediction, stationFeature);
+        statusElement.textContent =
+          body.data_source === "synthetic_demo"
+            ? "Prévision de démonstration synthétique : ne pas utiliser pour une décision réelle."
+            : "Prévision expérimentale — données d'entraînement non vérifiées.";
+      } catch (error) {
+        statusElement.textContent = `Prévision indisponible : ${error.message}`;
+        statusElement.classList.add("prediction-error");
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  } catch (error) {
+    statusElement.textContent = `API de prédiction indisponible : ${error.message}`;
+    statusElement.classList.add("prediction-error");
+  }
+}
+
 async function init() {
   [lignesGeojson, garesGeojson] = await Promise.all([
     fetchJson("/lignes", STATIC_FALLBACK.lignes),
@@ -214,6 +345,7 @@ async function init() {
   ]);
 
   lignesLayer = L.geoJSON(lignesGeojson, { style: styleLigne }).addTo(map);
+  await initializePredictions();
 
   garesLayer = L.geoJSON(garesGeojson, {
     pointToLayer: garePointToLayer,

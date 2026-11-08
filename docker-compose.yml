@@ -19,9 +19,14 @@ services:
       retries: 10
 
   api:
-    build: ./api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-railgis}:${POSTGRES_PASSWORD:-railgis}@db:5432/${POSTGRES_DB:-railgis_maroc}
+      MODEL_DIR: /app/models/trained
+    volumes:
+      - ./models/trained:/app/models/trained:ro
     ports:
       - "${API_PORT:-8000}:8000"
     depends_on:
