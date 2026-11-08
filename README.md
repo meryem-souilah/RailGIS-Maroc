@@ -32,8 +32,7 @@ estimer les retards et la fréquentation.
   observations fournies pour l'entraînement.
 - **Nager.Date** : jours fériés marocains utilisés pour l'enrichissement.
 
-Les horaires GTFS sont des horaires planifiés : ils ne constituent pas un
-historique des retards réels ou du nombre de voyageurs.
+
 
 ## Fonctionnalités
 
