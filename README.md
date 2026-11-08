@@ -262,16 +262,4 @@ ruff check api etl data_science
 pytest
 ```
 
-## Limites connues / pistes d'amélioration
 
-- Le GTFS `rail_maroc_oncf` couvre un sous-ensemble du réseau (33 gares, 3 lignes,
-  888 km) ; son `shapes.txt` est généré algorithmiquement par la source (script
-  `generate_shapes.py` du dépôt amont), pas un relevé topographique — d'où l'intérêt
-  du tracé OSM fourni en couche complémentaire (`GET /lignes/osm`).
-- La classification LGV / classique / navette est une heuristique par mots-clés sur
-  le nom et l'identifiant de ligne (le GTFS ne porte pas de champ dédié).
-- `analyse/trajet` renvoie les trajets **directs** uniquement (pas de correspondances).
-- 2 gares sur 33 n'ont pas d'équivalent trouvé dans OSM (cf. section harmonisation).
-- Bonus GeoAI possibles (cf. cahier des charges) : clustering des gares
-  sous-desservies (DBSCAN), prédiction fiable de temps de trajet et validation
-  opérationnelle des modèles (conditionnées à l'accès à des historiques réels).
