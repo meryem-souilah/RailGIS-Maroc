@@ -85,10 +85,6 @@ notamment de :
 - vérifier si les modèles de prédiction sont disponibles ;
 - demander des estimations de retard et de fréquentation pour des circulations.
 
-Les analyses de fréquentation et de vitesse sont calculées à partir des données
-de service disponibles ; elles ne sont pas des comptages réels de passagers ou
-des mesures certifiées en exploitation. La recherche d'itinéraire porte sur les
-trajets directs et ne calcule pas de correspondances.
 
 ### 4. Carte web interactive
 
@@ -105,9 +101,6 @@ L'interface web, construite avec **Leaflet**, permet de :
 - effectuer une prévision expérimentale depuis un formulaire cartographique et
   visualiser le résultat près de la gare concernée.
 
-La carte récupère ses données depuis l'API. Certaines couches géographiques
-peuvent aussi utiliser les GeoJSON préparés lorsque l'API n'est pas disponible ;
-les horaires et les prédictions nécessitent l'API.
 
 ### 5. Prédiction expérimentale et recommandations indicatives
 
@@ -126,10 +119,6 @@ compare les modèles sur une séparation chronologique entre apprentissage et
 Les résultats peuvent être sollicités par l'API et affichés sur la carte. Des
 alertes indicatives sont formulées quand les estimations dépassent des seuils
 calculés à partir des données d'entraînement.
-
-Le jeu d'entraînement de démonstration est synthétique. Le dépôt ne contient pas
-d'historique réel ONCF des retards et du nombre de passagers permettant de
-valider ces modèles en conditions opérationnelles.
 
 ## Technologies principales
 
