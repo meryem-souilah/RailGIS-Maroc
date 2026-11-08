@@ -8,10 +8,7 @@ données ferroviaires et géographiques, les prépare avec un ETL géospatial, l
 expose au moyen d'une API et permet de les explorer sur une carte interactive.
 
 Le projet comprend également un module expérimental de machine learning pour
-estimer les retards et la fréquentation. La démonstration actuelle utilise des
-données synthétiques et ses résultats ne représentent pas les performances
-réelles de l'ONCF.
-
+estimer les retards et la fréquentation. 
 ## Aperçu de l'application
 
 | Carte générale | Couverture régionale |
